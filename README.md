@@ -11,8 +11,8 @@ Roadmap
 
 Required Dependencies
 ----
-Newtonsoft.Json
-RestSharp
+* Newtonsoft.Json
+* RestSharp
 
 Example usage
 ----
