@@ -7,10 +7,13 @@ namespace TanDotNet
 {
     public interface ITangramClient
     {
-        Task<WalletAccount> CreateWallet();
-        Task<WalletBalance> WalletBalance(WalletAccount account);
+        Task<WalletAccount> WalletCreate();
+        Task<WalletBalance> WalletBalance(WalletAccount wallet);
+        Task<IEnumerable<string>> WalletList();
+        Task<WalletProfile> WalletProfile(WalletAccount wallet);
         Task<WalletReceive> WalletReceive(WalletAccount wallet);
         Task<WalletSend> WalletSend(WalletAccount wallet, int amount, string destination, string memo = null);
+        Task<IEnumerable<WalletTransaction>> WalletTransactions(WalletAccount wallet);
         Task<WalletVaultUnseal> WalletVaultUnseal(string shard);
     }
 }

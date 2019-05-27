@@ -30,7 +30,7 @@ namespace TanDotNet
             client = null;
         }
 
-        private async Task<T> ExecuteAsync<T>(RestRequest request) where T : new()
+        private async Task<T> ExecuteAsync<T>(RestRequest request)
         {
             var response = await client.ExecuteTaskAsync<T>(request, cancellationTokenSource.Token);
 
@@ -44,7 +44,7 @@ namespace TanDotNet
             return response.Data;
         }
 
-        private async Task<T> GetAsync<T>(RequestEndPoint endpoint) where T : new()
+        private async Task<T> GetAsync<T>(RequestEndPoint endpoint)
         {
             try
             {
@@ -57,7 +57,7 @@ namespace TanDotNet
             }
         }
 
-        private async Task<T> PostAsync<T>(RequestEndPoint endpoint, object body) where T : new()
+        private async Task<T> PostAsync<T>(RequestEndPoint endpoint, object body)
         {
             try
             {
@@ -72,7 +72,7 @@ namespace TanDotNet
         }
 
         /// <inheritdoc />
-        public async Task<WalletAccount> CreateWallet()
+        public async Task<WalletAccount> WalletCreate()
         {
             var wallet = await GetAsync<WalletAccount>(new RequestEndPoint
             {
@@ -80,15 +80,7 @@ namespace TanDotNet
                 Method = Create
             });
 
-            var profile = await PostAsync<WalletProfile>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Profile
-            }, new
-            {
-                Identifier = wallet.Identifier,
-                Password = wallet.Password
-            });
+            var profile = await WalletProfile(wallet);
 
             wallet.Address = profile.Data.StoreKeys[0].Address;
             wallet.PublicKey = profile.Data.StoreKeys[0].PublicKey;
@@ -96,8 +88,6 @@ namespace TanDotNet
 
             return wallet;
         }
-
-        // TODO: get wallet address
 
         /// <inheritdoc />
         public async Task<WalletBalance> WalletBalance(WalletAccount wallet)
@@ -113,6 +103,31 @@ namespace TanDotNet
             });
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<string>> WalletList()
+        {
+            return await GetAsync<IEnumerable<string>>(new RequestEndPoint
+            {
+                Group = Group.Wallet,
+                Method = List
+            });
+        }
+
+        /// <inheritdoc />
+        public async Task<WalletProfile> WalletProfile(WalletAccount wallet)
+        {
+            return await PostAsync<WalletProfile>(new RequestEndPoint
+            {
+                Group = Group.Wallet,
+                Method = Profile
+            }, new
+            {
+                Identifier = wallet.Identifier,
+                Password = wallet.Password
+            });
+        }
+
+        /// <inheritdoc />
         public async Task<WalletReceive> WalletReceive(WalletAccount wallet)
         {
             return await PostAsync<WalletReceive>(new RequestEndPoint
@@ -130,6 +145,7 @@ namespace TanDotNet
             });
         }
 
+        /// <inheritdoc />
         public async Task<WalletSend> WalletSend(WalletAccount wallet, int amount, string destination, string memo = null)
         {
             return await PostAsync<WalletSend>(new RequestEndPoint
@@ -149,6 +165,21 @@ namespace TanDotNet
             });
         }
 
+        /// <inheritdoc />
+        public async Task<IEnumerable<WalletTransaction>> WalletTransactions(WalletAccount wallet)
+        {
+            return await PostAsync<IEnumerable<WalletTransaction>>(new RequestEndPoint
+            {
+                Group = Group.Wallet,
+                Method = Transactions
+            }, new
+            {
+                Identifier = wallet.Identifier,
+                Password = wallet.Password
+            });
+        }
+
+        /// <inheritdoc />
         public async Task<WalletVaultUnseal> WalletVaultUnseal(string shard)
         {
             return await PostAsync<WalletVaultUnseal>(new RequestEndPoint
