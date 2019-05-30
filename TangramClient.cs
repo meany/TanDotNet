@@ -128,7 +128,7 @@ namespace TanDotNet
         }
 
         /// <inheritdoc />
-        public async Task<WalletReceive> WalletReceive(WalletAccount wallet)
+        public async Task<WalletReceive> WalletReceive(WalletAccount wallet, RedemptionMessage message = null)
         {
             return await PostAsync<WalletReceive>(new RequestEndPoint
             {
@@ -141,12 +141,13 @@ namespace TanDotNet
                     Identifier = wallet.Identifier,
                     Password = wallet.Password
                 },
-                FromAddress = wallet.Address
+                FromAddress = wallet.Address,
+                RedemptionMessage = message
             });
         }
 
         /// <inheritdoc />
-        public async Task<WalletSend> WalletSend(WalletAccount wallet, int amount, string destination, string memo = null)
+        public async Task<WalletSend> WalletSend(WalletAccount wallet, int amount, string destination, bool createRedemptionKey = false, string memo = null)
         {
             return await PostAsync<WalletSend>(new RequestEndPoint
             {
@@ -161,6 +162,7 @@ namespace TanDotNet
                 },
                 Amount = amount,
                 ToAddress = destination,
+                CreateRedemptionKey = createRedemptionKey,
                 Memo = memo
             });
         }
