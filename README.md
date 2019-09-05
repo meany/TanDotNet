@@ -1,4 +1,5 @@
 ﻿# TanDotNet
+![build status](https://github.com/meany/TanDotNet/workflows/build/badge.svg "build status")
 .NET Standard 2.0 library for working with the Tangram wallet REST API (Cypher)
 
 Features
@@ -17,7 +18,7 @@ Required Dependencies
 Example usage
 ----
 ```c#
-using (var client = new TangramClient("http://localhost:5001"))
+using (var client = new TangramClient("http://localhost:8001"))
 {
     var wallet = await client.WalletBalance(new WalletAccount
     {
