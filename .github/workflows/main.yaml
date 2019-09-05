@@ -1,4 +1,4 @@
-name: CI
+name: build
 on: [push]
 jobs:
   build:
@@ -9,4 +9,4 @@ jobs:
       - uses: actions/setup-dotnet@v1
         with:
           dotnet-version: '2.2.203'
-      - run: dotnet build TanTipBot.csproj --configuration Release
+      - run: dotnet build TanDotNet.csproj --configuration Release
