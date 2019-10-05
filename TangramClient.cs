@@ -80,11 +80,11 @@ namespace TanDotNet
                 Method = Create
             });
 
-            var profile = await WalletProfile(wallet);
+            var profile = await WalletKeySets(wallet);
 
-            wallet.Address = profile.Data.StoreKeys[0].Address;
-            wallet.PublicKey = profile.Data.StoreKeys[0].PublicKey;
-            wallet.SecretKey = profile.Data.StoreKeys[0].SecretKey;
+            wallet.Address = profile.FirstOrDefault().Address;
+            wallet.PublicKey = profile.FirstOrDefault().PublicKey;
+            wallet.SecretKey = profile.FirstOrDefault().SecretKey;
 
             return wallet;
         }
@@ -114,9 +114,9 @@ namespace TanDotNet
         }
 
         /// <inheritdoc />
-        public async Task<WalletProfile> WalletProfile(WalletAccount wallet)
+        public async Task<IEnumerable<WalletKeySet>> WalletKeySets(WalletAccount wallet)
         {
-            return await PostAsync<WalletProfile>(new RequestEndPoint
+            return await PostAsync<IEnumerable<WalletKeySet>>(new RequestEndPoint
             {
                 Group = Group.Wallet,
                 Method = Profile
@@ -147,7 +147,7 @@ namespace TanDotNet
         }
 
         /// <inheritdoc />
-        public async Task<WalletSend> WalletSend(WalletAccount wallet, int amount, string destination, bool createRedemptionKey = false, string memo = null)
+        public async Task<WalletSend> WalletSend(WalletAccount wallet, ulong amount, string destination, bool createRedemptionKey = false, string memo = null)
         {
             return await PostAsync<WalletSend>(new RequestEndPoint
             {

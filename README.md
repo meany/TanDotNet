@@ -1,7 +1,7 @@
 ﻿# TanDotNet
 ![build status](https://github.com/meany/TanDotNet/workflows/build/badge.svg "build status")
 
-.NET Standard 2.0 library for working with the Tangram wallet REST API (Cypher)
+.NET Standard 2.0 library for working with the Tangram wallet REST API ([Cypher](https://github.com/tangramproject/Cypher))
 
 Features
 ----
@@ -9,6 +9,7 @@ Features
 
 Roadmap
 ----
+* wen nodes
 * wen mainnet
 
 Required Dependencies
@@ -34,8 +35,8 @@ using (var client = new TangramClient("http://localhost:8001"))
         Identifier = "id_a1b2c3d4e5f6...",
         Password = "pingpong was hurled into the sun..."
     },
-        amount: 1,
-        destination: "P8DqGWNZ...",
+        amount: 1000,
+        destination: "tgm_P8DqGWNZ...",
         memo: "for the pizza");
 
     Console.WriteLine($"New balance: {wallet2.Balance}");

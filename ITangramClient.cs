@@ -10,9 +10,9 @@ namespace TanDotNet
         Task<WalletAccount> WalletCreate();
         Task<WalletBalance> WalletBalance(WalletAccount wallet);
         Task<IEnumerable<string>> WalletList();
-        Task<WalletProfile> WalletProfile(WalletAccount wallet);
+        Task<IEnumerable<WalletKeySet>> WalletKeySets(WalletAccount wallet);
         Task<WalletReceive> WalletReceive(WalletAccount wallet, RedemptionMessage message = null);
-        Task<WalletSend> WalletSend(WalletAccount wallet, int amount, string destination, bool createRedemptionMessage = false, string memo = null);
+        Task<WalletSend> WalletSend(WalletAccount wallet, ulong amount, string destination, bool createRedemptionMessage = false, string memo = null);
         Task<IEnumerable<WalletTransaction>> WalletTransactions(WalletAccount wallet);
         Task<WalletVaultUnseal> WalletVaultUnseal(string shard);
     }
