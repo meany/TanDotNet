@@ -3,7 +3,10 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <RootNamespace>TanDotNet</RootNamespace>
-    <Version>0.1</Version>
+    <Version>0.2</Version>
+    <PackageId>TanDotNet</PackageId>
+    <Authors>meany</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
