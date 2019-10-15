@@ -1,5 +1,7 @@
-﻿# TanDotNet
+# TanDotNet
+[![NuGet](https://img.shields.io/nuget/v/TanDotNet.svg?style=flat&logo=nuget&color=blue)](https://www.nuget.org/packages/TanDotNet)
 ![build status](https://github.com/meany/TanDotNet/workflows/build/badge.svg "build status")
+
 
 .NET Standard 2.0 library for working with the Tangram wallet REST API ([Cypher](https://github.com/tangramproject/Cypher))
 
