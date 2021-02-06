@@ -27,27 +27,25 @@ Enable the REST API in the bamboo `appsettings.json`:
 Example usage
 ----
 ```c#
-using (var client = new TangramClient("http://localhost:8001"))
+using var client = new TangramClient("http://localhost:8001");
+var balance = await client.WalletBalance(new Wallet
 {
-    var wallet = await client.WalletBalance(new WalletAccount
-    {
-        Identifier = "id_a1b2c3d4e5f6...",
-        Password = "pingpong was hurled into the sun..."
-    });
+    Identifier = "id_a1b2c3d4e5f6...",
+    Passphrase = "deputy sausage price exclude fly..."
+});
 
-    Console.WriteLine($"Wallet balance: {wallet.Balance}");
+Console.WriteLine($"Wallet balance: {balance}");
 
-    var wallet2 = await client.WalletSend(new WalletAccount
-    {
-        Identifier = "id_a1b2c3d4e5f6...",
-        Password = "pingpong was hurled into the sun..."
-    },
-        amount: 1000,
-        destination: "tgm_P8DqGWNZ...",
-        memo: "for the pizza");
+var spend = await client.WalletSpend(new Wallet
+{
+    Identifier = "id_a1b2c3d4e5f6...",
+    Passphrase = "deputy sausage price exclude fly..."
+},
+    address: "waPXFhGZaxPtGTVL...",
+    amount: 18.374,
+    memo: "for the pizza");
 
-    Console.WriteLine($"New balance: {wallet2.Balance}");
-}
+Console.WriteLine($"New balance: {spend.Balance}");
 ```
 
 Contribution
