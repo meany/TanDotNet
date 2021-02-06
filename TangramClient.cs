@@ -7,7 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using static TanDotNet.Request.Method;
+using Method = RestSharp.Method;
+using Action = TanDotNet.Request.Action;
 
 namespace TanDotNet
 {
@@ -32,7 +33,7 @@ namespace TanDotNet
 
         private async Task<T> ExecuteAsync<T>(RestRequest request)
         {
-            var response = await client.ExecuteTaskAsync<T>(request, cancellationTokenSource.Token);
+            var response = await client.ExecuteAsync<T>(request, cancellationTokenSource.Token);
 
             if (response.ErrorException != null || response.Data == null)
             {
@@ -44,11 +45,14 @@ namespace TanDotNet
             return response.Data;
         }
 
-        private async Task<T> GetAsync<T>(RequestEndPoint endpoint)
+        private async Task<T> GetAsync<T>(RequestEndpoint endpoint, object body = null)
         {
             try
             {
-                var request = new RestRequest($"{endpoint.Group}/{endpoint.Method}", RestSharp.Method.GET);
+                var request = new RestRequest($"{endpoint.Group}/{endpoint.Action}", Method.GET);
+                if (body != null)
+                    request.AddJsonBody(body);
+
                 return await ExecuteAsync<T>(request);
             }
             catch
@@ -57,12 +61,14 @@ namespace TanDotNet
             }
         }
 
-        private async Task<T> PostAsync<T>(RequestEndPoint endpoint, object body)
+        private async Task<T> PostAsync<T>(RequestEndpoint endpoint, object body = null)
         {
             try
             {
-                var request = new RestRequest($"{endpoint.Group}/{endpoint.Method}", RestSharp.Method.POST);
-                request.AddJsonBody(body);
+                var request = new RestRequest($"{endpoint.Group}/{endpoint.Action}", Method.POST);
+                if (body != null)
+                    request.AddJsonBody(body);
+
                 return await ExecuteAsync<T>(request);
             }
             catch
@@ -72,126 +78,106 @@ namespace TanDotNet
         }
 
         /// <inheritdoc />
-        public async Task<WalletAccount> WalletCreate()
+        public async Task<IEnumerable<string>> WalletAddresses(Wallet wallet)
         {
-            var wallet = await GetAsync<WalletAccount>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Create
-            });
-
-            var profile = await WalletKeySets(wallet);
-
-            wallet.Address = profile.FirstOrDefault().Address;
-            wallet.PublicKey = profile.FirstOrDefault().PublicKey;
-            wallet.SecretKey = profile.FirstOrDefault().SecretKey;
-
-            return wallet;
+            return await PostAsync<IEnumerable<string>>(
+                new RequestEndpoint(Group.Wallet, Action.Addresses),
+                wallet);
         }
 
         /// <inheritdoc />
-        public async Task<WalletBalance> WalletBalance(WalletAccount wallet)
+        public async Task<double> WalletBalance(Wallet wallet)
         {
-            return await PostAsync<WalletBalance>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Balance
-            }, new
-            {
-                Identifier = wallet.Identifier,
-                Password = wallet.Password
-            });
+            return await PostAsync<double>(
+                new RequestEndpoint(Group.Wallet, Action.Balance),
+                wallet);
+        }
+
+        /// <inheritdoc />
+        public async Task<Wallet> WalletCreate(string mnemonic = null, string passphrase = null)
+        {
+            dynamic data = null;
+
+            if (mnemonic != null)
+                data = new
+                {
+                    Mnemonic = mnemonic
+                };
+
+            if (passphrase != null)
+                data = new
+                {
+                    Mnemonic = data.Mnemonic ?? null,
+                    Passphrase = passphrase
+                };
+
+            return await GetAsync<Wallet>(
+                new RequestEndpoint(Group.Wallet, Action.Create),
+                data);
+        }
+
+        /// <inheritdoc />
+        public async Task<IEnumerable<WalletTransaction>> WalletHistory(Wallet wallet)
+        {
+            return await PostAsync<IEnumerable<WalletTransaction>>(
+                new RequestEndpoint(Group.Wallet, Action.History),
+                wallet);
         }
 
         /// <inheritdoc />
         public async Task<IEnumerable<string>> WalletList()
         {
-            return await GetAsync<IEnumerable<string>>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = List
-            });
+            return await GetAsync<IEnumerable<string>>(
+                new RequestEndpoint(Group.Wallet, Action.List));
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<WalletKeySet>> WalletKeySets(WalletAccount wallet)
+        public async Task<WalletMnemonic> WalletMnemonic(int language = 0, int mnemonicWordCount = 24, int passphraseWordCount = 12)
         {
-            return await PostAsync<IEnumerable<WalletKeySet>>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Profile
-            }, new
-            {
-                Identifier = wallet.Identifier,
-                Password = wallet.Password
-            });
-        }
-
-        /// <inheritdoc />
-        public async Task<WalletReceive> WalletReceive(WalletAccount wallet, RedemptionMessage message = null)
-        {
-            return await PostAsync<WalletReceive>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Receive
-            }, new
-            {
-                Credentials = new
+            return await GetAsync<WalletMnemonic>(
+                new RequestEndpoint(Group.Wallet, Action.Mnemonic),
+                new
                 {
-                    Identifier = wallet.Identifier,
-                    Password = wallet.Password
-                },
-                FromAddress = wallet.Address,
-                RedemptionMessage = message
-            });
+                    language,
+                    mnemonicWordCount,
+                    passphraseWordCount
+                });
         }
 
         /// <inheritdoc />
-        public async Task<WalletSend> WalletSend(WalletAccount wallet, ulong amount, string destination, bool createRedemptionKey = false, string memo = null)
+        public async Task<WalletReceive> WalletReceive(Wallet wallet, string paymentId)
         {
-            return await PostAsync<WalletSend>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Send
-            }, new
-            {
-                Credentials = new
+            return await PostAsync<WalletReceive>(
+                new RequestEndpoint(Group.Wallet, Action.Receive),
+                new
                 {
-                    Identifier = wallet.Identifier,
-                    Password = wallet.Password
-                },
-                Amount = amount,
-                ToAddress = destination,
-                CreateRedemptionKey = createRedemptionKey,
-                Memo = memo
-            });
+                    wallet.Identifier,
+                    wallet.Passphrase,
+                    paymentId
+                });
         }
 
         /// <inheritdoc />
-        public async Task<IEnumerable<WalletTransaction>> WalletTransactions(WalletAccount wallet)
+        public async Task<WalletSpend> WalletSpend(Wallet wallet, string address, double amount, string memo = null)
         {
-            return await PostAsync<IEnumerable<WalletTransaction>>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = Transactions
-            }, new
-            {
-                Identifier = wallet.Identifier,
-                Password = wallet.Password
-            });
+            return await PostAsync<WalletSpend>(
+                new RequestEndpoint(Group.Wallet, Action.Spend),
+                new
+                {
+                    wallet.Identifier,
+                    wallet.Passphrase,
+                    address,
+                    amount,
+                    memo
+                });
         }
 
         /// <inheritdoc />
-        public async Task<WalletVaultUnseal> WalletVaultUnseal(string shard)
+        public async Task<WalletProtobuf> WalletTransaction(byte[] payment)
         {
-            return await PostAsync<WalletVaultUnseal>(new RequestEndPoint
-            {
-                Group = Group.Wallet,
-                Method = VaultUnseal
-            }, new
-            {
-                Shard = shard
-            });
+            return await PostAsync<WalletProtobuf>(
+                new RequestEndpoint(Group.Wallet, Action.Transaction),
+                payment);
         }
     }
 }

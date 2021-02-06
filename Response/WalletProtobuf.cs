@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TanDotNet.Models;
 
 namespace TanDotNet.Response
 {
-    public class SuccessBase
+    public class WalletProtobuf
     {
-        public bool Success { get; set; }
+        public byte[] Protobuf { get; set; }
     }
 }

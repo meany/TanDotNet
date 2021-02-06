@@ -5,9 +5,9 @@ using TanDotNet.Models;
 
 namespace TanDotNet.Response
 {
-    public class WalletSend
+    public class WalletSpend
     {
-        public ulong Balance { get; set; }
-        public RedemptionMessage Message { get; set; }
+        public double Balance { get; set; }
+        public string PaymentId { get; set; }
     }
 }

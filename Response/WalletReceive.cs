@@ -6,6 +6,8 @@ namespace TanDotNet.Response
 {
     public class WalletReceive
     {
-        public ulong Balance { get; set; }
+        public string Memo { get; set; }
+        public string Received { get; set; }
+        public double Balance { get; set; }
     }
 }
