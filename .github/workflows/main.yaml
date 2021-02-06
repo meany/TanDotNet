@@ -12,4 +12,4 @@ jobs:
       - name: build and push
         run: |
           dotnet build TanDotNet.csproj --configuration Release
-          dotnet nuget push bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json
+          dotnet nuget push bin/Release/*.nupkg -k ${{ secrets.NUGET_API_KEY }} -s https://api.nuget.org/v3/index.json --skip-duplicate
