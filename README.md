@@ -2,8 +2,7 @@
 [![NuGet](https://img.shields.io/nuget/v/TanDotNet.svg?style=flat&logo=nuget&color=blue)](https://www.nuget.org/packages/TanDotNet)
 ![build status](https://github.com/meany/TanDotNet/workflows/build/badge.svg "build status")
 
-
-.NET Standard 2.0 library for working with the Tangram wallet REST API ([Cypher](https://github.com/tangramproject/Cypher))
+.NET 5 library for working with the Tangram wallet REST API ([bamboo](https://github.com/cypher-network/bamboo))
 
 Features
 ----
@@ -11,13 +10,19 @@ Features
 
 Roadmap
 ----
-* wen nodes
 * wen mainnet
 
 Required Dependencies
 ----
 * Newtonsoft.Json
 * RestSharp
+
+Enable the REST API in the bamboo `appsettings.json`:
+```js
+  "network": {
+    "enabled_restAPI": true,
+  }
+```
 
 Example usage
 ----
